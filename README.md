@@ -195,3 +195,11 @@ The original string: "Hello TensorFlow."
 
 https://developers.google.com/machine-learning/glossary#logits
 
+
+2. Git Large File Problem Solution
+https://medium.com/@marcosantonocito/fixing-the-gh001-large-files-detected-you-may-want-to-try-git-large-file-storage-43336b983272
+
+```bash
+git filter-branch -f --index-filter 'git rm --cached --ignore-unmatch questionClassification/glove.6B.100d.txt'
+```
+
