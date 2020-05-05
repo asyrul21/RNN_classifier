@@ -187,6 +187,60 @@ print('The original string: "{}"'.format(original_string))
 Encoded string is [4025, 222, 6307, 2327, 4043, 2120, 7975]  <= **sequence of word indices**
 The original string: "Hello TensorFlow."
 ```
+# Question Classifier Example
+1. To run this example you must first ensure that the glove file *glove.6B.100d.txt* is present in the QuestionClassification folder. Due to the huge size I cant push this file to git repo.
+
+2. In QuestionClassifier.py, create dataset instance.
+```python
+# 2 args = file and label position - first or last
+data = DatasetCsv('HUM.csv', 'first')
+
+#if your data file is txt use
+data = DatasetTxt('train_5500.txt', 'first')
+```
+
+3. You can also filter the data by parent label. In first argument specify the name of parent class. In the second argument you can set if you want to save the filtered dataset to csv. Otherwise, the function just return a list of data.
+```python
+data.filterByParentClass('HUM', save=True)
+```
+
+4. You can now get train and test data by loading the data. You can specify two arguments: first the embedding mode - either none, parent or child. If you want to load the labels based on the child label, specify 'child'. The secodn argument is the training data split. By default it is 0.8, meaning 80% training and 20% test. You can change this by giving a value between 0-1.
+```python
+# 2 args = embeddingMode(none, parent, or child) and traindataSlplit,
+trainData, trainLabels, testData, testLabels = data.load('child')
+```
+  - You can also view the label dictionary
+  ```python
+  classSize = len(data.labelDictionary)
+
+  print('Label dictionary size:', classSize)
+  print(data.labelDictionary)
+  ```
+
+5. You can now build, compile and train an LSTM NN model
+```python
+model = tf.keras.Sequential([
+    tf.keras.layers.LSTM(128, dropout=0.2),
+    tf.keras.layers.Dense(64, activation='relu'),
+    tf.keras.layers.Dropout(0.2),
+    tf.keras.layers.Dense(classSize, activation='softmax')
+])
+
+# compile model
+model.compile(loss=tf.keras.losses.SparseCategoricalCrossentropy(),
+              optimizer=tf.keras.optimizers.Adam(lr=1e-3),
+              metrics=['accuracy'])
+
+# LST expects not 1D input data, but 2D.
+model.fit(trainData, trainLabels, epochs=30,
+          validation_data=(testData, testLabels))
+
+# evaluate model accuracy
+test_loss, test_acc = model.evaluate(testData, testLabels, verbose=2)
+print('\nTest accuracy:', test_acc)
+```
+6. You can save the model if you want by referring 'Save and Load Model' section above.
+
 
 # Refences
 1. Understanding Logits
@@ -196,10 +250,25 @@ The original string: "Hello TensorFlow."
 https://developers.google.com/machine-learning/glossary#logits
 
 
-2. Git Large File Problem Solution
+2. Romove NON AsCII from string
+
+https://stackoverflow.com/questions/20078816/replace-non-ascii-characters-with-a-single-space
+
+```python
+def remove_non_ascii_2(text):
+    return re.sub(r'[^\x00-\x7F]',' ', text)
+```
+
+3. Git Large File Problem Solution
 https://medium.com/@marcosantonocito/fixing-the-gh001-large-files-detected-you-may-want-to-try-git-large-file-storage-43336b983272
 
 ```bash
 git filter-branch -f --index-filter 'git rm --cached --ignore-unmatch questionClassification/glove.6B.100d.txt'
 ```
+
+4. Importing classes from different folder
+
+https://stackoverflow.com/questions/456481/cant-get-python-to-import-from-a-different-folder
+
+Create __init__.py at the root module
 

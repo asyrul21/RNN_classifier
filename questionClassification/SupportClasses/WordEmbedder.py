@@ -1,4 +1,4 @@
-from GloveLoader import GloveLoader
+from SupportClasses.GloveLoader import GloveLoader
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 

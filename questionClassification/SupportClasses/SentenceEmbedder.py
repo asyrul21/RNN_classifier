@@ -1,4 +1,4 @@
-from WordEmbedder import WordEmbedder
+from SupportClasses.WordEmbedder import WordEmbedder
 import numpy as np
 
 

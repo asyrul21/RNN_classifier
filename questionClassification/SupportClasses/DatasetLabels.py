@@ -1,5 +1,5 @@
 import numpy as np
-from LabelDictionary import LabelDictionary
+from SupportClasses.LabelDictionary import LabelDictionary
 
 
 class DatasetLabels:

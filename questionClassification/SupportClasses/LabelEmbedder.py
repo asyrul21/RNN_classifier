@@ -1,39 +1,27 @@
-# from DatasetLabels import DatasetLabels
-from HierarchicalDatasetLabels import HierarchicalDatasetLabels
+from abc import abstractmethod
+from SupportClasses.DatasetLabels import DatasetLabels
+from SupportClasses.ILabel import ILabel
 import numpy as np
 
 
-class LabelEmbedder:
+class LabelEmbedder(ILabel):
     def __init__(self, dataset, labelPosition='last'):
         self.dataset = dataset
         self.labelPosition = labelPosition
-        self.datasetLabels = self.__createDatasetLabels()
+        self.datasetLabels = self._createDatasetLabels()
         self.labelDictionary = self.datasetLabels.labelDictionary
 
-    def __createDatasetLabels(self):
-        # return DatasetLabels(self.dataset, self.labelPosition)
-        return HierarchicalDatasetLabels(self.dataset, self.labelPosition)
+    def _createDatasetLabels(self):
+        return DatasetLabels(self.dataset, self.labelPosition)
 
-    def getAllLabels(self):
+    def getLabels(self):
         return self.datasetLabels.allLabels
 
     def getLabelDictionay(self):
         return self.labelDictionary
 
-    def getParentLabels(self):
-        return self.datasetLabels.parentLabels
-
-    def getParentLabelDictionary(self):
-        return self.datasetLabels.parentLabelDictionary
-
-    def getChildLabels(self):
-        return self.datasetLabels.childLabels
-
-    def getChildLabelDictionary(self):
-        return self.datasetLabels.childLabelDictionary
-
     # embedding
-    def embedLabelToAllLabels(self):
+    def embedLabels(self):
         labelIndices = []
         for label in self.datasetLabels.allLabels:
             labelIndices.append(self.labelDictionary[label])
